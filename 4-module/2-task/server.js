@@ -47,7 +47,6 @@ server.on('request', (req, res) => {
         });
 
         limitSizeStream.on('finish', () => {
-          console.log('enddd')
           res.statusCode = 201;
           res.end();
         });
