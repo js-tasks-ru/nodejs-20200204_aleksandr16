@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const connection = require('../libs/connection');
 const config = require('../config');
+const UserNotFound = require('../errors/user-not-found-error');
+const WrongPassword = require('../errors/wrong-password-error');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -66,6 +68,18 @@ userSchema.methods.checkPassword = async function(password) {
 
   const hash = await generatePassword(this.salt, password);
   return hash === this.passwordHash;
+};
+
+userSchema.statics.login = async function(email, password) {
+  const user = await this.findOne({email});
+  
+  if (!user) throw new UserNotFound();
+  const isValidPassword = await user.checkPassword(password);
+  if (!isValidPassword) {
+    throw new WrongPassword();
+  }
+
+  return user;
 };
 
 module.exports = connection.model('User', userSchema);
