@@ -9,7 +9,7 @@ describe('7-module-1-task', () => {
     before(async () => {
       await User.deleteMany();
 
-      for (const user of users) {
+      for (const user of users.users) {
         const u = new User(user);
         await u.setPassword(user.password);
         await u.save();
