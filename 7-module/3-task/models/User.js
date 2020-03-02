@@ -68,4 +68,16 @@ userSchema.methods.checkPassword = async function(password) {
   return hash === this.passwordHash;
 };
 
+userSchema.statics.login = async function(email, password) {
+  const user = await this.findOne({email});
+
+  if (!user) throw new Error('User not found');
+  const isValidPassword = await user.checkPassword(password);
+  if (!isValidPassword) {
+    throw new Error('Wrong password or username');
+  }
+
+  return user;
+};
+
 module.exports = connection.model('User', userSchema);
